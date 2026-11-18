@@ -18,21 +18,21 @@ const server=http.createServer((req, res)=>{
         );
     }else{
         if(req.url==='/message'){
-            res.setHeader('Content-Type', 'text/html');
+            //res.setHeader('Content-Type', 'text/html');
 
-            let dataChunks = [];
+            let body = [];
             req.on('data', (chunks) => {
-                console.log(chunks);
-                dataChunks.push(chunks);
-            })
+                //console.log(chunks);
+                body.push(chunks);
+            });
             req.on('end', () => {
-                let buffer = Buffer.concat(dataChunks);
+                let buffer = Buffer.concat(body);
                 let formData = buffer.toString();
 
                 const formValues = formData.split('=')[1];
                 
                 fs.writeFile('formValues.txt', formValues, (err) => {
-                    res.statusCode = 302;
+                    res.statusCode = 302;     //redirected
                     res.setHeader('Location', '/');
                     res.end();
                 })
@@ -42,12 +42,13 @@ const server=http.createServer((req, res)=>{
                 //read from the file
                 fs.readFile('formValues.txt', (err, data) => {
                     console.log(data.toString());
-                    res.end(`<h1>${data.toString()}</h1>`);
+                    res.end(`
+                        <h1>${data.toString()}</h1>`);
                 })
             }
         }
     }
-})
-server.listen(3001, ()=>{
+});
+server.listen(3000, ()=>{
     console.log("Server is running");
-})
+});
